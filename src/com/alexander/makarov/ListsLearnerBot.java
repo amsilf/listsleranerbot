@@ -1,5 +1,8 @@
 package com.alexander.makarov;
 
+import com.alexander.makarov.database.AwsDriverManager;
+import com.alexander.makarov.database.ListsDao;
+import com.alexander.makarov.database.ListsDaoImpl;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -7,6 +10,8 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,14 @@ public class ListsLearnerBot extends TelegramLongPollingBot {
             "/start start working with api\n" +
             "/lists show existing lists";
 
+    private static final Connection connection = AwsDriverManager.getConnection();
+
+    private static ListsDao listsDao;
+
+    public ListsLearnerBot() {
+        listsDao = new ListsDaoImpl(connection);
+    }
+
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
@@ -27,16 +40,21 @@ public class ListsLearnerBot extends TelegramLongPollingBot {
             InlineKeyboardMarkup keyboardMarkup;
             SendMessage messageObj = new SendMessage().setChatId(chatId);
 
-            switch(messageText) {
-                case "/start":
-                    keyboardMarkup = createInlineKeyboard();
-                    messageObj.setText("start message");
-                    messageObj.setReplyMarkup(keyboardMarkup);
-                    break;
-                case "/help":
-                default:
-                    messageObj.setText(HELP_MESSAGE);
-                    break;
+            try {
+                switch (messageText) {
+                    case "/start":
+                        listsDao.addList("test_list", "1d");
+                        keyboardMarkup = createInlineKeyboard();
+                        messageObj.setText("start message");
+                        messageObj.setReplyMarkup(keyboardMarkup);
+                        break;
+                    case "/help":
+                    default:
+                        messageObj.setText(HELP_MESSAGE);
+                        break;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
             sendMessageToChat(messageObj);

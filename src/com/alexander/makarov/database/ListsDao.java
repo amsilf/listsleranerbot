@@ -2,6 +2,7 @@ package com.alexander.makarov.database;
 
 import com.alexander.makarov.model.ListToMemorize;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface ListsDao {
@@ -10,7 +11,7 @@ public interface ListsDao {
 
     List<String> getListItems(String listName);
 
-    void addList(String listName, long repetitionFrequency);
+    void addList(String listName, String repetitionFrequency) throws SQLException;
 
     void addItem(String listName, String itemName);
 

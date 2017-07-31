@@ -25,7 +25,7 @@
     <properties>
         <telegram.bot.version>3.2</telegram.bot.version>
         <aws.sdk.version>1.11.170</aws.sdk.version>
-        <jdbc.driver.version>5.1.6</jdbc.driver.version>
+        <amazon.redshift.version>1.1.9.1009</amazon.redshift.version>
     </properties>
 
     <repositories>
@@ -50,9 +50,9 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${jdbc.driver.version}</version>
+            <groupId>com.amazon</groupId>
+            <artifactId>redshift-jdbc41</artifactId>
+            <version>${amazon.redshift.version}</version>
         </dependency>
 
     </dependencies>
